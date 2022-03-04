@@ -144,7 +144,7 @@ class FolRNNED(nn.Module):
         embedded_box_input= self.box_embed(box)
         embedded_flow_input= self.flow_embed(flow)
 
-        embedded_ego_input = self.ego_pred_embed(ego_pred) # (batch_size, segment_len, pred_timesteps, input_embed_size) 
+        # embedded_ego_input = self.ego_pred_embed(ego_pred) # (batch_size, segment_len, pred_timesteps, input_embed_size) 
 
         # initialize hidden states as zeros
         box_h = torch.zeros(self.args.batch_size, self.args.box_enc_size).to(device)

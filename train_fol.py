@@ -26,7 +26,7 @@ args = parse_args()
 # initialize model
 fol_model = FolRNNED(args).to(device)
 all_params = fol_model.parameters()
-
+ego_pred_model = None
 if args.with_ego:
     print("Initializing pre-trained ego motion predictor...")
     ego_pred_model = EgoRNNED(args).to(device)

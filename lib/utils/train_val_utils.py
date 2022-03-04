@@ -151,7 +151,7 @@ def train_fol_ego(epoch, args, fol_model, ego_pred_model, optimizer, train_gen, 
         avg_obj_pred_loss: float scalar
     '''
     fol_model.train() # Sets the module in training mode.
-    ego_pred_model.train()
+    # ego_pred_model.train()
 
     avg_fol_loss = 0
     avg_ego_pred_loss = 0
@@ -162,18 +162,18 @@ def train_fol_ego(epoch, args, fol_model, ego_pred_model, optimizer, train_gen, 
             input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion = data
             
             # run forward
-            ego_predictions = ego_pred_model(input_ego_motion) # the ego_predictions is actually ego changes 
-                                                               # rather than the absolute ego motion values
+            # ego_predictions = ego_pred_model(input_ego_motion) # the ego_predictions is actually ego changes 
+            #                                                    # rather than the absolute ego motion values
 
-            fol_predictions = fol_model(input_bbox, input_flow, ego_predictions)
+            fol_predictions = fol_model(input_bbox, input_flow, None)
 
             # compute loss
             fol_loss = rmse_loss_fol(fol_predictions, target_bbox)
-            ego_pred_loss = rmse_loss_fol(ego_predictions, target_ego_motion)
-            loss_to_optimize = args.lambda_fol * fol_loss +  args.lambda_ego * ego_pred_loss
+            # ego_pred_loss = rmse_loss_fol(ego_predictions, target_ego_motion)
+            loss_to_optimize = args.lambda_fol * fol_loss 
 
             avg_fol_loss += fol_loss.item() 
-            avg_ego_pred_loss += ego_pred_loss.item()
+            # avg_ego_pred_loss += ego_pred_loss.item()
 
             # optimize
             optimizer.zero_grad() # avoid gradient accumulate from loss.backward()
@@ -186,7 +186,7 @@ def train_fol_ego(epoch, args, fol_model, ego_pred_model, optimizer, train_gen, 
             if verbose and batch_idx % 100 == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\t FOL loss: {:.4f}\t Ego pred loss: {:.4f}'.format(
                     epoch, batch_idx * len(data), len(train_gen.dataset),
-                    100. * batch_idx / len(train_gen), fol_loss.item()/input_bbox.shape[0], ego_pred_loss.item()/input_ego_motion.shape[0]))
+                    100. * batch_idx / len(train_gen), fol_loss.item()/input_bbox.shape[0], 0))
         avg_fol_loss /= len(train_gen.dataset)
         avg_ego_pred_loss /= len(train_gen.dataset)
         avg_train_loss = avg_fol_loss + avg_ego_pred_loss
@@ -209,7 +209,7 @@ def val_fol_ego(epoch, args, fol_model, ego_pred_model, val_gen, verbose=True):
         ego_pred_loss: float scalar
     '''
     fol_model.eval() # Sets the module in training mode.
-    ego_pred_model.eval()
+    # ego_pred_model.eval()
 
     fol_loss = 0
     ego_pred_loss = 0
@@ -219,18 +219,18 @@ def val_fol_ego(epoch, args, fol_model, ego_pred_model, val_gen, verbose=True):
             input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion = data
 
             # run forward
-            ego_predictions = ego_pred_model(input_ego_motion)
-            fol_predictions = fol_model(input_bbox, input_flow, ego_predictions)
+            # ego_predictions = ego_pred_model(input_ego_motion)
+            fol_predictions = fol_model(input_bbox, input_flow, None)
 
             # compute loss
             fol_loss += rmse_loss_fol(fol_predictions, target_bbox).item()
-            ego_pred_loss += rmse_loss_fol(ego_predictions, target_ego_motion).item()
+            # ego_pred_loss += rmse_loss_fol(ego_predictions, target_ego_motion).item()
 
     fol_loss /= len(val_gen.dataset)
     ego_pred_loss /= len(val_gen.dataset)
     avg_val_loss = fol_loss + ego_pred_loss
     if verbose:
-        print('\nVal set: Average FOL loss: {:.4f}, Average Ego pred loss: {:.4f}, Total: {:.4f}\n'.format(fol_loss, ego_pred_loss, avg_val_loss))
+        print('\nVal set: Average FOL loss: {:.4f}, Average Ego pred loss: {:.4f}, Total: {:.4f}\n'.format(fol_loss, 0, avg_val_loss))
 
     return avg_val_loss, fol_loss, ego_pred_loss
 
