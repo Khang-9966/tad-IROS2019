@@ -122,7 +122,7 @@ for epoch in range(1, args.nb_fol_epoch+1):
             os.mkdir(args.checkpoint_dir)
 
         torch.save(fol_model.state_dict(), os.path.join(args.checkpoint_dir, saved_fol_model_name))
-        torch.save(ego_pred_model.state_dict(), os.path.join(args.checkpoint_dir, saved_ego_pred_model_name))
+        # torch.save(ego_pred_model.state_dict(), os.path.join(args.checkpoint_dir, saved_ego_pred_model_name))
 
         best_fol_model = os.path.join(args.checkpoint_dir, saved_fol_model_name)
         best_ego_model = os.path.join(args.checkpoint_dir, saved_ego_pred_model_name)
