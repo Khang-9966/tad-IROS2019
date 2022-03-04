@@ -25,9 +25,11 @@ class HEVIDataset(data.Dataset):
         for session in self.sessions:
             # for each car in dataset, we split to several trainig samples
             data = pkl.load(open(session, 'rb'))
-            bbox = data['bbox']
-            flow = data['flow']
-            ego_motion = data['ego_motion']# [yaw, x, z]
+           
+            bbox = np.array(data['bbox'])
+            flow = np.array(data['flow'])
+            
+            # ego_motion = data['ego_motion']# [yaw, x, z]
             # frame_id = data['frame_id']
 
             # go farwad along the session to get data samples
@@ -37,11 +39,13 @@ class HEVIDataset(data.Dataset):
                 end = start + self.args.segment_len
                 if end + self.args.pred_timesteps <= len(bbox) and end <= len(flow):
                     input_bbox = bbox[start:end,:]
+                    
                     input_flow = flow[start:end,:,:,:]
-                    input_ego_motion = self.get_input(ego_motion, start, end)
+             
+                    # input_ego_motion = self.get_input(ego_motion, start, end)
                     
                     target_bbox = self.get_target(bbox, start, end)
-                    target_ego_motion = self.get_target(ego_motion, start, end)
+                    # target_ego_motion = self.get_target(ego_motion, start, end)
                     
                     # target_ego_motion = self.get_target(ego_motion_session, ego_start, ego_end)
                     # if input_flow.shape[0] != 16:
@@ -50,7 +54,7 @@ class HEVIDataset(data.Dataset):
                     #     print(input_flow.shape)
                     #     print("start: {} end:{} length:{}".format(start, end, self.args.segment_len))
                     
-                    self.all_inputs.append([input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion])
+                    self.all_inputs.append([input_bbox, input_flow, None, target_bbox, None])
             
             # go backward along the session to get data samples again
             seed = np.random.randint(self.args.seed_max)
@@ -62,15 +66,15 @@ class HEVIDataset(data.Dataset):
                 if start >= 0:
                     input_bbox = bbox[start:end,:]
                     input_flow = flow[start:end,:,:,:]
-                    input_ego_motion = self.get_input(ego_motion, start, end)
+                    # input_ego_motion = self.get_input(ego_motion, start, end)
                     target_bbox = self.get_target(bbox, start, end)
-                    target_ego_motion = self.get_target(ego_motion, start, end)
+                    # target_ego_motion = self.get_target(ego_motion, start, end)
                     # if input_flow.shape[0] != 16:
                     #     print(flow.shape)
                     #     print(bbox.shape)
                     #     print(input_flow.shape)
                     #     print("start: {} end:{} length:{}".format(start, end, self.args.segment_len))
-                    self.all_inputs.append([input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion])
+                    self.all_inputs.append([input_bbox, input_flow, None, target_bbox, None])
 
     def get_input(self, ego_motion_session, start, end):
         '''
@@ -117,12 +121,12 @@ class HEVIDataset(data.Dataset):
         input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion = self.all_inputs[index]
         input_bbox = torch.FloatTensor(input_bbox).to(device)
         input_flow = torch.FloatTensor(input_flow).to(device)
-        input_ego_motion = torch.FloatTensor(input_ego_motion).to(device)
+        # input_ego_motion = torch.FloatTensor(input_ego_motion).to(device)
 
         target_bbox = torch.FloatTensor(target_bbox).to(device)
-        target_ego_motion = torch.FloatTensor(target_ego_motion).to(device)
+        # target_ego_motion = torch.FloatTensor(target_ego_motion).to(device)
 
-        return input_bbox, input_flow, input_ego_motion, target_bbox, target_ego_motion
+        return input_bbox, input_flow, input_flow, target_bbox, target_bbox
 
 
 class HEVIEgoDataset(data.Dataset):

@@ -1,6 +1,6 @@
 # Directories arguments
-data_root: "../HEVI_dataset/fol_data"
-ego_data_root: "../HEVI_dataset/ego_motion"
+data_root: "DoTA/fol_data"
+ego_data_root: "DoTA/ego_motion"
 checkpoint_dir: "checkpoints/fol_ego_checkpoints"
 
 best_ego_pred_model: "checkpoints/ego_pred_checkpoints/epoch_080_loss_0.001.pt"
