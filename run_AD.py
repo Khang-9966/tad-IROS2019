@@ -44,6 +44,7 @@ def main(args):
         fol_ego_data = pkl.load(open(fol_ego_file,'rb'))
         for frame in fol_ego_data:
             '''compute iou metrics'''
+            print(frame['bbox_pred'])
             L_bbox = iou_metrics(frame['bbox_pred'], 
                                 frame['bbox_gt'],
                                 multi_box='average', 
@@ -69,7 +70,7 @@ def main(args):
             
         if file_idx % 10 == 0:
             print(file_idx)
-    
+
     auc, fpr, tpr = Evaluator.compute_AUC(all_mean_iou_anomaly_scores, evaluator.labels)
     print("FVL MEAN IOU AUC: ", auc)
     auc, fpr, tpr = Evaluator.compute_AUC(all_mask_anomaly_scores, evaluator.labels)

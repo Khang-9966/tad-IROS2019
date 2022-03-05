@@ -50,22 +50,25 @@ class Tracker():
         Returns:
         '''
         self.bbox = bbox_normalize(bbox,W=self.args.W, H=self.args.H)
-        try:
-            # update the flow if the pseudo bbox size is acceptable
-            # self.flow = roi_pooling_opencv(self.bbox, 
-            #                         image_flow, 
-            #                         size=[5,5])
-            self.flow = np.expand_dims(image_flow,0)
-        except:
-            # otherwise use the previous flow feature
-            pass
+        if image_flow is not None:
+          try:
+              # update the flow if the pseudo bbox size is acceptable
+              # self.flow = roi_pooling_opencv(self.bbox, 
+              #                         image_flow, 
+              #                         size=[5,5])
+              self.flow = np.expand_dims(image_flow,0)
+          except:
+              # otherwise use the previous flow feature
+              pass
 
         self.predict(ego_pred)
         # update the past prediction queue 
         self.all_predictions.append(self.pred_bboxes)
+        
         if len(self.all_predictions) > self.args.pred_timesteps + 1:
             self.all_predictions.pop(0)#popleft()
-        
+       
+
         # find the pred boxes at t
         self.find_pred_boxes_at_t()
 
@@ -78,15 +81,16 @@ class Tracker():
         If an existing bbox is missed, use the previously predicted as the 'pseudo' detection 
         '''
         self.bbox = self.pred_bboxes[0:1,:]
-        try:
-            # update the flow if the pseudo bbox size is acceptable
-            # self.flow = roi_pooling_opencv(self.bbox, 
-            #                         image_flow, 
-            #                         size=[5,5])
-            self.flow = np.expand_dims(image_flow,0)
-        except:
-            # otherwise use the previous flow feature
-            pass
+        if image_flow is not None:
+          try:
+              # update the flow if the pseudo bbox size is acceptable
+              # self.flow = roi_pooling_opencv(self.bbox, 
+              #                         image_flow, 
+              #                         size=[5,5])
+              self.flow = np.expand_dims(image_flow,0)
+          except:
+              # otherwise use the previous flow feature
+              pass
         self.predict(ego_pred)
         # update the past prediction queue 
         self.all_predictions.append(self.pred_bboxes)
@@ -112,8 +116,10 @@ class Tracker():
             pass
         try:
             self.flow = torch.FloatTensor(self.flow).to(device)
+            
         except:
             pass
+       
         box_changes, self.bbox_h, self.flow_h = self.predictor(self.bbox, 
                                                                 self.flow, 
                                                                 self.bbox_h, 
@@ -122,6 +128,7 @@ class Tracker():
         self.pred_bboxes = self.bbox + box_changes
         # get rid of the first dim which is batch size
         self.pred_bboxes = self.pred_bboxes[0,:,:] 
+       
     
     def find_pred_boxes_at_t(self):
         '''
@@ -130,6 +137,7 @@ class Tracker():
         '''
         prev_predictions = self.all_predictions[:-1]
         prev_steps = len(prev_predictions)
+       
         # skip if the car is firstly observed
         self.pred_boxes_t = []
         if prev_predictions:

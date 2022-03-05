@@ -11,6 +11,7 @@ class Evaluator():
             self.labels = self.load_taiwan_sa()
         elif self.args.test_dataset == "A3D":
             self.labels = self.load_A3D(label_file)
+            print(self.labels)
         else:
             raise NameError(self.args.test_dataset + " is unknown!")
 
@@ -51,11 +52,13 @@ class Evaluator():
     def compute_AUC(all_anomaly_scores, all_labels, normalize=True, ignore=[]):
         # precision, recall, thresholds = metrics.precision_recall_curve(labels, scores, pos_label=0)
         # auc = metrics.auc(recall, precision)
-        
+  
         scores, labels, zero_score_videos = Evaluator.get_score_label(all_anomaly_scores, 
                                                                    all_labels,
                                                                    normalize=normalize,
                                                                    ignore=ignore)
+        print(labels)
+        print(scores)
         fpr, tpr, thresholds = metrics.roc_curve(labels, scores, pos_label=1)
 
         auc = metrics.auc(fpr, tpr)

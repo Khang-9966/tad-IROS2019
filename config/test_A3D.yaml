@@ -10,7 +10,7 @@ best_fol_model: '/content/drive/MyDrive/Dataset/DoTa/fol_epoch_098_loss_0.0021.p
 best_ego_pred_model: '/home/brianyao/Documents/tad-IROS2019/checkpoints/fvl_ego_checkpoints/ego_pred_epoch_055_loss_0.0016.pt'
 
 test_dataset: "A3D" 
-label_file: '/home/brianyao/Documents/tad-IROS2019/datasets/A3D_labels.pkl'
+label_file: 'labels.pkl'
 
 track_dir: "track_dir"
 flow_dir: "/media/DATA/A3D/flownet2"
@@ -31,7 +31,7 @@ lambda_fol: 1
 lambda_ego: 1
 device: 'cuda'
 # fol model parameters
-pred_timesteps: 15
+pred_timesteps: 5
 input_embed_size: 512
 flow_enc_size: 512
 box_enc_size: 512

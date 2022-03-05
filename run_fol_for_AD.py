@@ -57,7 +57,7 @@ def main(args, visualize=False):
 
     # load the pre-computed tracklets of the test data
     all_track_files = sorted(glob.glob(os.path.join(args.track_dir, '*.npy')))
-
+    val_meta = pkl.load(open(args.label_file, 'rb'))
     # Run inference on each test video, save 
     for video_idx, track_file in enumerate(all_track_files):
         output_dict_list = []
@@ -72,7 +72,7 @@ def main(args, visualize=False):
         flow_folder = os.path.join(args.flow_dir, video_name)
         image_folder = os.path.join(args.img_dir, video_name, 'images')
         
-        video_len = len(glob.glob(os.path.join(image_folder, '*')))
+        video_len = int(val_meta[track_file.split("/")[-1].split(".")[0]]["num_frames"]) #len(glob.glob(os.path.join(image_folder, '*')))
         
         # load tracking data and ego motion data
         track_data = np.load(track_file)
@@ -119,7 +119,7 @@ def main(args, visualize=False):
             output_dict['bbox_gt'] = []
             output_dict['bbox_pred'] = {}
             output_dict_list.append(output_dict)
-        
+       
         while current_frame_id <= video_len:#track_data[-1][0]:
        
             # read the flow of that frame
@@ -127,7 +127,10 @@ def main(args, visualize=False):
             #                         str(format(current_frame_id,'06'))+'.flo')
             # flow = read_flo(flow_file)
             # flow = np.expand_dims(flow, axis=0)
-            flow = None 
+            try:
+              flow = flow_data[i]
+            except:
+              flow = None 
             '''Ego motion update'''
             # pred_ego_motion_chanegs = ego_motion_tracker.update(ego_motion_data[current_frame_id-1:current_frame_id,:])
             pred_ego_motion_chanegs = None
@@ -143,8 +146,8 @@ def main(args, visualize=False):
                     bbox[:,0] += bbox[:,2]/2
                     bbox[:,1] += bbox[:,3]/2
                     all_observed_boxes.append(track_data[i][1:6])
-                    if track_id not in all_trackers.tracker_ids:
-                        print(track_id)
+                
+                    if track_id not in all_trackers.tracker_ids:                
                         # add a new tracker to thetracker list
         #                 print("Adding a new tracker: ", track_id)
                         new_tracker = Tracker(args, 
@@ -196,7 +199,7 @@ def main(args, visualize=False):
             output_dict['bbox_pred'] = {}
             for tracker_id in all_trackers.tracker_ids:
                 output_dict['bbox_pred'][tracker_id] = all_trackers.trackers[tracker_id].pred_boxes_t
-                
+             
             output_dict_list.append(output_dict)
                 
             ## TODO:
@@ -217,6 +220,7 @@ def main(args, visualize=False):
                 
 
             '''update current frame id'''
+            
             current_frame_id += 1 #= int(track_data[i][0])
         
         # save the outputs of FOL+Ego_pred for anomaly detection evaluation

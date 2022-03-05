@@ -128,7 +128,7 @@ def mask_iou_metrics(all_pred_boxes_t,
     
     if len(all_observed_boxes) > 0:
         for tarcker_id, bbox in all_observed_boxes.items():
-            converted_box = cxcywh_to_x1y1x2y2(bbox)
+            converted_box = cxcywh_to_x1y1x2y2(bbox.cpu())
             converted_box = bbox_denormalize(converted_box, W=W, H=H)[0].astype(int)
             observed_mask[converted_box[1]:converted_box[3], converted_box[0]:converted_box[2]] = 1
     if len(all_pred_boxes_t) > 0:
