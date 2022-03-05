@@ -52,8 +52,8 @@ def main(args, visualize=False):
     # initialize FOL model and ego_pred model
     fol_predictor =  FolRNNED(args).to(device)
     fol_predictor.load_state_dict(torch.load(args.best_fol_model)) 
-    ego_motion_predictor =  EgoRNNED(args).to(device)
-    ego_motion_predictor.load_state_dict(torch.load(args.best_ego_pred_model))
+    # ego_motion_predictor =  EgoRNNED(args).to(device)
+    # ego_motion_predictor.load_state_dict(torch.load(args.best_ego_pred_model))
 
     # load the pre-computed tracklets of the test data
     all_track_files = sorted(glob.glob(os.path.join(args.track_dir, '*.npy')))
@@ -76,18 +76,20 @@ def main(args, visualize=False):
         
         # load tracking data and ego motion data
         track_data = np.load(track_file)
-        ego_motion_data = np.load(os.path.join(args.ego_motion_dir, video_name+'.npy'))
+        flow_data = np.load(track_file.replace("track_dir","flow_dir"))
+
+        # ego_motion_data = np.load(os.path.join(args.ego_motion_dir, video_name+'.npy'))
         
         '''initialize tracker object for anomaly detection'''
         all_trackers = AllTrackers()
-        ego_motion_tracker = EgoTracker(args, 
-                                        ego_motion_predictor.predict, 
-                                        ego_motion_data[0:1,:])
+        # ego_motion_tracker = EgoTracker(args, 
+        #                                 ego_motion_predictor.predict, 
+        #                                 ego_motion_data[0:1,:])
         
         output_dict = {}
         output_dict['frame_id'] = 0
-        output_dict['ego_motion_obs'] = ego_motion_data[0:1,:]
-        output_dict['ego_motion_perd'] = []
+        # output_dict['ego_motion_obs'] = ego_motion_data[0:1,:]
+        # output_dict['ego_motion_perd'] = []
         
         '''initialize data row id and frame id'''
         i = 0
@@ -107,39 +109,42 @@ def main(args, visualize=False):
             Bbox and flow may not start from the first frame, so we loop ego motion first
             until bboxes are firstly detected.
             '''
-            ego_motion_tracker.update(ego_motion_data[frame_id:frame_id+1,:])
+            # ego_motion_tracker.update(ego_motion_data[frame_id:frame_id+1,:])
             
             # save in the output
             output_dict = {}
             output_dict['frame_id'] = frame_id
-            output_dict['ego_motion_obs'] = ego_motion_data[frame_id:frame_id+1,:]
-            output_dict['ego_motion_perd'] = ego_motion_tracker.pred_ego_t
+            # output_dict['ego_motion_obs'] = ego_motion_data[frame_id:frame_id+1,:]
+            # output_dict['ego_motion_perd'] = ego_motion_tracker.pred_ego_t
             output_dict['bbox_gt'] = []
             output_dict['bbox_pred'] = {}
             output_dict_list.append(output_dict)
         
         while current_frame_id <= video_len:#track_data[-1][0]:
+       
             # read the flow of that frame
-            flow_file = os.path.join(flow_folder, 
-                                    str(format(current_frame_id,'06'))+'.flo')
-            flow = read_flo(flow_file)
-            flow = np.expand_dims(flow, axis=0)
-            
+            # flow_file = os.path.join(flow_folder, 
+            #                         str(format(current_frame_id,'06'))+'.flo')
+            # flow = read_flo(flow_file)
+            # flow = np.expand_dims(flow, axis=0)
+            flow = None 
             '''Ego motion update'''
-            pred_ego_motion_chanegs = ego_motion_tracker.update(ego_motion_data[current_frame_id-1:current_frame_id,:])
-            
+            # pred_ego_motion_chanegs = ego_motion_tracker.update(ego_motion_data[current_frame_id-1:current_frame_id,:])
+            pred_ego_motion_chanegs = None
             '''Object motion update'''
             # loop over all detections in one frame
             all_observed_boxes = []
             if i < len(track_data):
                 # update the tracking based on observation
                 while track_data[i][0] == current_frame_id:
+                    flow = flow_data[i]
                     track_id = int(track_data[i][1])
                     bbox = np.expand_dims(track_data[i][2:6], axis=0) # bbox is in tlwh, need to convert to cxcywh!!
                     bbox[:,0] += bbox[:,2]/2
                     bbox[:,1] += bbox[:,3]/2
                     all_observed_boxes.append(track_data[i][1:6])
                     if track_id not in all_trackers.tracker_ids:
+                        print(track_id)
                         # add a new tracker to thetracker list
         #                 print("Adding a new tracker: ", track_id)
                         new_tracker = Tracker(args, 
@@ -181,8 +186,8 @@ def main(args, visualize=False):
             # save in the output
             output_dict = {}
             output_dict['frame_id'] = current_frame_id - 1
-            output_dict['ego_motion_obs'] = ego_motion_data[current_frame_id-1:current_frame_id,:]
-            output_dict['ego_motion_perd'] = ego_motion_tracker.pred_ego_t
+            # output_dict['ego_motion_obs'] = ego_motion_data[current_frame_id-1:current_frame_id,:]
+            # output_dict['ego_motion_perd'] = ego_motion_tracker.pred_ego_t
             
             output_dict['bbox_gt'] = {}
             for tracker_id in all_observed_track_id:

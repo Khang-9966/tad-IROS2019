@@ -4,19 +4,19 @@ ego_data_root: "/media/DATA/HEVI_dataset/ego_motion"
 checkpoint_dir: "/home/brianyao/Documents/stad2019iros-pytorch/checkpoints/fol_ego_checkpoints"
 
 # Directories arguments for running on Anomaly Detection videos only
-# best_fol_model: 'checkpoints/fol_ego_checkpoints/fol_ego_0.5sec/fol_epoch_078_loss_0.0013.pt'
+# best_fol_model: '/content/drive/MyDrive/Dataset/DoTa/fol_epoch_098_loss_0.0021.pt'
 # best_ego_pred_model: "/home/brianyao/Documents/stad2019iros-pytorch/checkpoints/ego_pred_checkpoints/epoch_080_loss_0.001.pt"
-best_fol_model: '/home/brianyao/Documents/tad-IROS2019/checkpoints/fvl_ego_checkpoints/fvl_epoch_055_loss_0.0014.pt'
+best_fol_model: '/content/drive/MyDrive/Dataset/DoTa/fol_epoch_098_loss_0.0021.pt'
 best_ego_pred_model: '/home/brianyao/Documents/tad-IROS2019/checkpoints/fvl_ego_checkpoints/ego_pred_epoch_055_loss_0.0016.pt'
 
 test_dataset: "A3D" 
 label_file: '/home/brianyao/Documents/tad-IROS2019/datasets/A3D_labels.pkl'
 
-track_dir: "/media/DATA/A3D/deep_sort_clear"
+track_dir: "track_dir"
 flow_dir: "/media/DATA/A3D/flownet2"
 ego_motion_dir: "/media/DATA/A3D/ego_motion"
 img_dir: "/media/DATA/A3D/frames"
-save_dir: "/media/DATA/A3D/fvl_ego_results"
+save_dir: "fvl_ego_results"
 
 # dataset arguments
 seed_max: 5
@@ -31,11 +31,11 @@ lambda_fol: 1
 lambda_ego: 1
 device: 'cuda'
 # fol model parameters
-pred_timesteps: 5
+pred_timesteps: 15
 input_embed_size: 512
 flow_enc_size: 512
 box_enc_size: 512
-with_ego: True
+with_ego: False
 
 enc_hidden_size: 512 # no use
 enc_concat_type: "average"

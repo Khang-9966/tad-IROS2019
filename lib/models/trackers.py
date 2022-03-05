@@ -52,9 +52,10 @@ class Tracker():
         self.bbox = bbox_normalize(bbox,W=self.args.W, H=self.args.H)
         try:
             # update the flow if the pseudo bbox size is acceptable
-            self.flow = roi_pooling_opencv(self.bbox, 
-                                    image_flow, 
-                                    size=[5,5])
+            # self.flow = roi_pooling_opencv(self.bbox, 
+            #                         image_flow, 
+            #                         size=[5,5])
+            self.flow = np.expand_dims(image_flow,0)
         except:
             # otherwise use the previous flow feature
             pass
@@ -79,9 +80,10 @@ class Tracker():
         self.bbox = self.pred_bboxes[0:1,:]
         try:
             # update the flow if the pseudo bbox size is acceptable
-            self.flow = roi_pooling_opencv(self.bbox, 
-                                    image_flow, 
-                                    size=[5,5])
+            # self.flow = roi_pooling_opencv(self.bbox, 
+            #                         image_flow, 
+            #                         size=[5,5])
+            self.flow = np.expand_dims(image_flow,0)
         except:
             # otherwise use the previous flow feature
             pass
