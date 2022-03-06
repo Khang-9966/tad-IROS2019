@@ -49,7 +49,7 @@ class Tracker():
             flow: (320,192,2)
         Returns:
         '''
-        self.bbox = bbox_normalize(bbox,W=self.args.W, H=self.args.H)
+        self.bbox = bbox
         if image_flow is not None:
           try:
               # update the flow if the pseudo bbox size is acceptable

@@ -63,7 +63,7 @@ def vis_multi_prediction(image,
             ymax = int(target_bbox[1] + target_bbox[3]/2)
 
 
-            draw_rectangle(draw, [(xmin,ymin),(xmax,ymax)], (255,0,0), width=width)    
+            draw_rectangle(draw, [(xmin,ymin),(xmax,ymax)], (0,255,0), width=width)    
           except:
             continue   
     
@@ -83,14 +83,14 @@ def vis_multi_prediction(image,
         predictions[:,1] = predictions[:,1] * H
         predictions[:,2] = predictions[:,2] * W
         predictions[:,3] = predictions[:,3] * H
-        print(predictions)
+  
         for i, pred_box in enumerate(predictions):
             xmin = int(pred_box[0] - pred_box[2]/2)
             ymin = int(pred_box[1] - pred_box[3]/2)
             xmax = int(pred_box[0] + pred_box[2]/2)
             ymax = int(pred_box[1] + pred_box[3]/2)
             print([(xmin,ymin),(xmax,ymax)])
-            draw_rectangle(draw, [(xmin,ymin),(xmax,ymax)], (0,255,0), width=width)
+            draw_rectangle(draw, [(xmin,ymin),(xmax,ymax)], (255,0,0), width=width)
         
         if show_id:
             draw.text((xmin, ymin),str(track_id),(0,0,255))
