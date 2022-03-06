@@ -44,7 +44,7 @@ def main(args):
         fol_ego_data = pkl.load(open(fol_ego_file,'rb'))
         for frame in fol_ego_data:
             '''compute iou metrics'''
-            print(frame['bbox_pred'])
+           
             L_bbox = iou_metrics(frame['bbox_pred'], 
                                 frame['bbox_gt'],
                                 multi_box='average', 

@@ -194,14 +194,14 @@ def main(args, visualize=False):
             
             output_dict['bbox_gt'] = {}
             for tracker_id in all_observed_track_id:
-                output_dict['bbox_gt'][tracker_id] = all_trackers.trackers[tracker_id].bbox
+                output_dict['bbox_gt'][tracker_id] = all_trackers.trackers[tracker_id].bbox.detach().cpu().numpy()
             
             output_dict['bbox_pred'] = {}
             for tracker_id in all_trackers.tracker_ids:
-                output_dict['bbox_pred'][tracker_id] = all_trackers.trackers[tracker_id].pred_boxes_t
+                output_dict['bbox_pred'][tracker_id] = [ torchtensor.detach().cpu().numpy() for torchtensor in all_trackers.trackers[tracker_id].pred_boxes_t]
              
             output_dict_list.append(output_dict)
-                
+           
             ## TODO:
             '''visualize prediction'''
             if visualize:

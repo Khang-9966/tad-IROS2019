@@ -128,13 +128,14 @@ def mask_iou_metrics(all_pred_boxes_t,
     
     if len(all_observed_boxes) > 0:
         for tarcker_id, bbox in all_observed_boxes.items():
-            converted_box = cxcywh_to_x1y1x2y2(bbox.cpu())
+            converted_box = cxcywh_to_x1y1x2y2(bbox)
             converted_box = bbox_denormalize(converted_box, W=W, H=H)[0].astype(int)
             observed_mask[converted_box[1]:converted_box[3], converted_box[0]:converted_box[2]] = 1
     if len(all_pred_boxes_t) > 0:
         for tracker_id, pred_boxes_t in all_pred_boxes_t.items():
             if len(pred_boxes_t) <= 0:
                 continue
+            pred_boxes_t = np.array(pred_boxes_t)
             if multi_box == 'union':
                 converted_boxes = cxcywh_to_x1y1x2y2(pred_boxes_t)
                 converted_boxes = bbox_denormalize(converted_boxes)
@@ -142,6 +143,7 @@ def mask_iou_metrics(all_pred_boxes_t,
                 for box in converted_boxes:
                     pred_mask[box[1]:box[3], box[0]:box[2]] = 1
             elif multi_box == 'latest':
+                
                 pred_box_t = pred_boxes_t[0:1,:]
                 converted_box = cxcywh_to_x1y1x2y2(pred_box_t)
                 converted_box = bbox_denormalize(converted_box, W=W, H=H)
