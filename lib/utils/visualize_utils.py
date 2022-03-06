@@ -89,7 +89,7 @@ def vis_multi_prediction(image,
             ymin = int(pred_box[1] - pred_box[3]/2)
             xmax = int(pred_box[0] + pred_box[2]/2)
             ymax = int(pred_box[1] + pred_box[3]/2)
-            print([(xmin,ymin),(xmax,ymax)])
+  
             draw_rectangle(draw, [(xmin,ymin),(xmax,ymax)], (255,0,0), width=width)
         
         if show_id:
