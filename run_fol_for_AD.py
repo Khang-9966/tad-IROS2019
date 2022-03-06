@@ -47,7 +47,7 @@ print("Cuda available: ", torch.cuda.is_available())
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def main(args, visualize=False):
+def main(args, visualize=True):
 
     # initialize FOL model and ego_pred model
     fol_predictor =  FolRNNED(args).to(device)
@@ -204,19 +204,22 @@ def main(args, visualize=False):
            
             ## TODO:
             '''visualize prediction'''
-            if visualize:
+            if visualize and current_frame_id < video_len:
                 img_name = str(format(current_frame_id,'06'))+'.jpg'
                 img_file = os.path.join(image_folder, img_name)
                 img = cv2.imread(img_file) # (H, W, 3)
-                
-                save_dir = os.path.join(OUT_DIR, video_name)
+             
+                save_dir = os.path.join(args.OUT_DIR, video_name)
                 if not os.path.isdir(save_dir):
                     os.mkdir(save_dir)
                 save_dir = os.path.join(save_dir, img_name)
                 
                 vis_multi_prediction(img, 
-                                    all_trackers.trackers, 
-                                    all_observed_boxes, save_dir=save_dir)
+                                    output_dict['bbox_pred'], 
+                                    all_observed_boxes, 
+                                    all_observed_track_id,
+                                    save_dir=save_dir,
+                                    )
                 
 
             '''update current frame id'''
@@ -229,4 +232,4 @@ def main(args, visualize=False):
 
 if __name__=='__main__':
     args = parse_args()
-    main(args, visualize=False)
+    main(args, visualize=True)

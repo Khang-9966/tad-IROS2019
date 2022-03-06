@@ -11,11 +11,12 @@ best_ego_pred_model: '/home/brianyao/Documents/tad-IROS2019/checkpoints/fvl_ego_
 
 test_dataset: "A3D" 
 label_file: 'labels.pkl'
+OUT_DIR: "vil_image"
 
 track_dir: "track_dir"
 flow_dir: "/media/DATA/A3D/flownet2"
 ego_motion_dir: "/media/DATA/A3D/ego_motion"
-img_dir: "/media/DATA/A3D/frames"
+img_dir: "val"
 save_dir: "fvl_ego_results"
 
 # dataset arguments
